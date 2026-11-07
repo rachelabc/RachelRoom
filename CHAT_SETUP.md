@@ -10,7 +10,7 @@ GEMINI_API_KEY=your-key-here
 
 Restart the development server after changing it. Never add a `VITE_` prefix or
 put the key in frontend code. An optional server-only `GEMINI_MODEL` setting can
-override the default `gemini-3.1-flash-lite` model.
+override the default `gemini-3.5-flash-lite` model.
 
 Edit `server/rachel-profile.json` to update Soobin's approved facts. Keep it to
 public information; its contents are sent to Gemini with each question. Profile

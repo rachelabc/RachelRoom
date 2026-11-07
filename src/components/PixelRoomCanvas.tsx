@@ -34,6 +34,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
   const CANVAS_WIDTH = 960;
   const CANVAS_HEIGHT = 600;
   const viewOffsetRef = useRef(0);
+  const indicatorHitsRef = useRef<Array<{ id: ZoneId; left: number; top: number; width: number; height: number }>>([]);
 
   // A wider desktop view reveals extra wall/floor, rather than widening sprites.
   useEffect(() => {
@@ -42,7 +43,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     const resize = () => {
       const { width, height } = canvas.getBoundingClientRect();
       if (!height) return;
-      const viewWidth = Math.max(CANVAS_WIDTH, Math.round(CANVAS_HEIGHT * width / height));
+      const viewWidth = window.matchMedia('(max-width: 767px)').matches ? CANVAS_WIDTH : Math.max(CANVAS_WIDTH, Math.round(CANVAS_HEIGHT * width / height));
       if (canvas.width !== viewWidth) canvas.width = viewWidth;
       viewOffsetRef.current = (viewWidth - CANVAS_WIDTH) / 2;
       const context = canvas.getContext('2d');
@@ -78,7 +79,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     waitTimer: 60
   });
 
-  const CAT_BED_POS = { x: 125, y: 475 };
+  const CAT_BED_POS = { x: 213, y: 532 };
   const [activeZone, setActiveZone] = useState<ZoneId | null>(null);
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const animationFrameId = useRef<number | null>(null);
@@ -155,10 +156,10 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
   const coreZones: Array<{ id: ZoneId; name: string; x: number; y: number; radius: number; label: string; overheadY: number; num: number }> = [
     { id: 'bed', name: '1. The Bed & Plushies', x: 770, y: 220, radius: 135, label: 'Cozy Bed', overheadY: 95, num: 1 },
     { id: 'door', name: '2. The Bedroom Door', x: 885, y: 515, radius: 130, label: 'Boba Break', overheadY: 450, num: 2 },
-    { id: 'cat', name: '3. Soobin the Cat Tree', x: catPosRef.current.x, y: catPosRef.current.y, radius: 115, label: 'Meet Soobin', overheadY: catPosRef.current.y - 45, num: 3 },
-    { id: 'bookshelf', name: '4. POPMART Shelf', x: 95, y: 310, radius: 125, label: 'Figurines', overheadY: 195, num: 4 },
-    { id: 'desk', name: '5. My Desk & Cal', x: 185, y: 175, radius: 125, label: 'About & Work', overheadY: 65, num: 5 },
-    { id: 'starjar', name: 'Paper Star Jar', x: 635, y: 140, radius: 85, label: 'Origami Star Jar', overheadY: 90, num: 6 }
+    { id: 'cat', name: 'Soobin the Cat Tree', x: catPosRef.current.x, y: catPosRef.current.y, radius: 115, label: 'Meet Soobin', overheadY: catPosRef.current.y - 45, num: 0 },
+    { id: 'bookshelf', name: '3. POPMART Shelf', x: 95, y: 310, radius: 125, label: 'Figurines', overheadY: 195, num: 3 },
+    { id: 'desk', name: '4. Rachel’s Desk', x: 185, y: 175, radius: 125, label: 'Rachel’s Desk', overheadY: 65, num: 4 },
+    { id: 'starjar', name: 'Paper Star Jar', x: 635, y: 140, radius: 85, label: 'Star Jar', overheadY: 90, num: 5 }
   ];
 
   // Furniture solid obstacles - tight and streamlined so walking corridors are wide and smooth!
@@ -173,7 +174,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     // Bookshelf
     { minX: 45, minY: 220, maxX: 105, maxY: 380 },
     // Cat tree in bottom-left
-    { minX: 45, minY: 450, maxX: 155, maxY: 565 },
+    { minX: 145, minY: 450, maxX: 255, maxY: 565 },
     // Bed & nightstand
     { minX: 640, minY: 95, maxX: 890, maxY: 230 }
     // Door has no blocking obstacle so avatar can walk right on the mat!
@@ -869,7 +870,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
 
   // Draw Bottom-Left Cat Tree
   const drawCatTreeCorner = (ctx: CanvasRenderingContext2D, animFrame: number) => {
-    const tx = 55;
+    const tx = 155;
     const ty = 430;
 
     ctx.fillStyle = '#fae8ff';
@@ -877,69 +878,80 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     ctx.ellipse(tx + 65, ty + 105, 65, 32, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Condo box
-    ctx.fillStyle = '#5a3014';
-    ctx.fillRect(tx + 20, ty + 65, 75, 55);
-    ctx.fillStyle = '#783e1c';
-    ctx.fillRect(tx + 24, ty + 68, 67, 48);
+    // Castle cubby: upholstered walls, a cat-sized arch and crenellations.
+    ctx.fillStyle = '#594169'; ctx.fillRect(tx + 18, ty + 64, 80, 57);
+    ctx.fillStyle = '#eadff3'; ctx.fillRect(tx + 22, ty + 68, 72, 49);
+    ctx.fillStyle = '#c9b2db';
+    for (let row = 0; row < 4; row++) {
+      const y = ty + 72 + row * 12;
+      ctx.fillRect(tx + 22, y, 72, 1);
+      for (let x = tx + 25 + (row % 2) * 12; x < tx + 93; x += 24) ctx.fillRect(x, y, 1, 12);
+    }
+    ctx.fillStyle = '#594169';
+    for (let x = tx + 18; x < tx + 98; x += 18) ctx.fillRect(x, ty + 58, 10, 9);
+    ctx.fillStyle = '#c9a660'; ctx.fillRect(tx + 18, ty + 65, 80, 3);
+    ctx.fillStyle = '#241c30';
+    ctx.beginPath(); ctx.arc(tx + 58, ty + 95, 17, Math.PI, 0); ctx.fill();
+    ctx.fillRect(tx + 41, ty + 95, 34, 22);
+    ctx.fillStyle = '#d8b4fe'; ctx.fillRect(tx + 44, ty + 113, 28, 4);
 
-    // Cat-ear door
-    ctx.fillStyle = '#261206';
-    ctx.beginPath();
-    ctx.arc(tx + 57, ty + 95, 16, Math.PI, 0);
-    ctx.fillRect(tx + 41, ty + 95, 32, 21);
-    ctx.moveTo(tx + 41, ty + 85);
-    ctx.lineTo(tx + 45, ty + 77);
-    ctx.lineTo(tx + 51, ty + 83);
-    ctx.moveTo(tx + 63, ty + 83);
-    ctx.lineTo(tx + 69, ty + 77);
-    ctx.lineTo(tx + 73, ty + 85);
-    ctx.fill();
-
-    // Sisal pillars
-    ctx.fillStyle = '#d4b996';
-    ctx.fillRect(tx + 30, ty + 18, 12, 48);
-    ctx.fillRect(tx + 75, ty + 18, 12, 48);
-    ctx.fillStyle = '#b89a74';
-    for (let py = ty + 20; py < ty + 65; py += 5) {
-      ctx.fillRect(tx + 30, py, 12, 1);
-      ctx.fillRect(tx + 75, py, 12, 1);
+    // Rope-wrapped scratching posts keep this a functional-looking cat tree.
+    ctx.fillStyle = '#ead6b8';
+    ctx.fillRect(tx + 26, ty + 17, 13, 43);
+    ctx.fillRect(tx + 78, ty + 17, 13, 43);
+    ctx.fillStyle = '#b4946b';
+    for (let y = ty + 20; y < ty + 60; y += 4) {
+      ctx.fillRect(tx + 26, y, 13, 1); ctx.fillRect(tx + 78, y, 13, 1);
     }
 
-    // Top Perch Bed
-    ctx.fillStyle = '#5a3014';
-    ctx.fillRect(tx + 15, ty + 14, 90, 6);
-    ctx.fillStyle = '#d8b4fe';
-    ctx.beginPath();
-    ctx.ellipse(tx + 60, ty + 12, 42, 16, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#f3e8ff';
-    ctx.beginPath();
-    ctx.ellipse(tx + 60, ty + 10, 36, 12, 0, 0, Math.PI * 2);
-    ctx.fill();
+    // Padded lookout perch between two miniature castle towers.
+    ctx.fillStyle = '#594169'; ctx.fillRect(tx + 15, ty + 12, 90, 8);
+    ctx.fillStyle = '#d8b4fe'; ctx.fillRect(tx + 22, ty + 5, 76, 10);
+    ctx.fillStyle = '#fff6ea'; ctx.fillRect(tx + 29, ty + 4, 62, 7);
+    for (const x of [tx + 10, tx + 94]) {
+      ctx.fillStyle = '#594169'; ctx.fillRect(x, ty - 12, 17, 32);
+      ctx.fillStyle = '#eadff3'; ctx.fillRect(x + 3, ty - 9, 11, 26);
+      ctx.fillStyle = '#8c69ab';
+      ctx.beginPath(); ctx.moveTo(x - 4, ty - 12); ctx.lineTo(x + 8, ty - 30); ctx.lineTo(x + 21, ty - 12); ctx.fill();
+      ctx.fillStyle = '#c9a660'; ctx.fillRect(x + 7, ty - 32, 3, 4);
+      ctx.fillStyle = '#594169'; ctx.fillRect(x + 6, ty - 3, 5, 9);
+    }
 
-    // Hanging toy
-    const stringSway = Math.sin(animFrame * 0.1) * 3;
-    ctx.strokeStyle = '#f472b6';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(tx + 95, ty + 20);
-    ctx.quadraticCurveTo(tx + 95 + stringSway, ty + 38, tx + 93 + stringSway, ty + 46);
-    ctx.stroke();
-    ctx.fillStyle = '#f43f5e';
-    ctx.beginPath();
-    ctx.arc(tx + 93 + stringSway, ty + 48, 5, 0, Math.PI * 2);
-    ctx.fill();
+    // Projecting balcony with brass railings and a cushion for royal naps.
+    ctx.fillStyle = '#594169'; ctx.fillRect(tx + 36, ty + 35, 57, 8);
+    ctx.fillStyle = '#c9a660'; ctx.fillRect(tx + 34, ty + 34, 61, 3);
+    ctx.fillStyle = '#f5d5e9'; ctx.fillRect(tx + 43, ty + 29, 40, 5);
+    ctx.fillStyle = '#c9a660';
+    ctx.fillRect(tx + 34, ty + 21, 61, 3);
+    for (let x = tx + 35; x < tx + 96; x += 10) ctx.fillRect(x, ty + 22, 2, 14);
+    ctx.fillStyle = '#8c69ab';
+    ctx.fillRect(tx + 41, ty + 43, 5, 7); ctx.fillRect(tx + 82, ty + 43, 5, 7);
 
-    // Bowls
-    ctx.fillStyle = '#38bdf8';
-    ctx.beginPath();
-    ctx.ellipse(tx + 112, ty + 102, 11, 6, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#f472b6';
-    ctx.beginPath();
-    ctx.ellipse(tx + 138, ty + 102, 11, 6, 0, 0, Math.PI * 2);
-    ctx.fill();
+    // Magnetic toy charm: a tiny horseshoe magnet suspended from the tower.
+    const sway = Math.round(Math.sin(animFrame * .08) * 2);
+    ctx.strokeStyle = '#c9a660'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(tx + 106, ty + 13); ctx.lineTo(tx + 113 + sway, ty + 42); ctx.stroke();
+    ctx.fillStyle = '#e88bad';
+    ctx.fillRect(tx + 108 + sway, ty + 42, 3, 9); ctx.fillRect(tx + 117 + sway, ty + 42, 3, 9);
+    ctx.fillRect(tx + 111 + sway, ty + 49, 6, 4);
+    ctx.fillStyle = '#c8edf4';
+    ctx.fillRect(tx + 108 + sway, ty + 41, 3, 3); ctx.fillRect(tx + 117 + sway, ty + 41, 3, 3);
+
+    // Ceramic fountain: tiered basin, brass spout, flowing water and ripples.
+    const fx = tx + 124;
+    const fy = ty + 100;
+    ctx.fillStyle = '#272330'; ctx.beginPath(); ctx.ellipse(fx, fy + 7, 23, 11, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff8eb'; ctx.beginPath(); ctx.ellipse(fx, fy + 2, 21, 10, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#8ed8e8'; ctx.beginPath(); ctx.ellipse(fx, fy, 17, 6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff8eb'; ctx.fillRect(fx - 5, fy - 25, 10, 24);
+    ctx.fillStyle = '#c9a660'; ctx.fillRect(fx - 7, fy - 28, 14, 5);
+    ctx.strokeStyle = '#c7f5ff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(fx + 5, fy - 23); ctx.quadraticCurveTo(fx + 15, fy - 15, fx + 10, fy); ctx.stroke();
+    const ripple = 3 + (animFrame % 36) / 6;
+    ctx.strokeStyle = '#e3fbff'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(fx + 6, fy, ripple, ripple / 3, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#c9a660'; ctx.beginPath(); ctx.ellipse(tx + 158, fy + 3, 10, 6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#805938'; ctx.beginPath(); ctx.ellipse(tx + 158, fy + 1, 7, 3, 0, 0, Math.PI * 2); ctx.fill();
   };
 
   // Draw Bed with NEAT, TUCKED BLANKETS with CAT DESIGN PATTERNS!
@@ -1238,7 +1250,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
   const drawCat = (ctx: CanvasRenderingContext2D, animFrame: number) => {
     const cx = Math.round(catPosRef.current.x);
     const cy = Math.round(catPosRef.current.y);
-    const isSleeping = timeOfDay === 'night'; // Cat NEVER sleeps during the day!
+    const isSleeping = timeOfDay === 'night' && Math.hypot(cx - CAT_BED_POS.x, cy - CAT_BED_POS.y) < 5;
     const isPurring = catState === 'purring';
 
     ctx.fillStyle = 'rgba(60, 40, 20, 0.25)';
@@ -1247,6 +1259,9 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     ctx.fill();
 
     if (isSleeping) {
+      // Curl up at the cubby's cushion, scaled to fit inside its arched entrance.
+      ctx.save();
+      ctx.translate(cx, cy); ctx.scale(.78, .78); ctx.translate(-cx, -cy);
       const breath = Math.sin(animFrame * 0.06) * 1;
       ctx.fillStyle = '#1e1b24';
       ctx.beginPath();
@@ -1279,6 +1294,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
       ctx.arc(cx + 11, cy - 2, 9, 0.2, Math.PI * 0.9);
       ctx.stroke();
 
+      ctx.restore();
       if (animFrame % 60 < 45) {
         ctx.fillStyle = '#c084fc';
         ctx.font = '9px Silkscreen';
@@ -1637,10 +1653,45 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
   // OVERHEAD FLOATING "EXPLORE ME!" BADGES & VIBRANT "CLICK ON ME!" PROMPT
   const drawOverheadIndicators = (ctx: CanvasRenderingContext2D, animFrame: number) => {
     if (activeModal) return;
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const scale = canvas.getBoundingClientRect().width / CANVAS_WIDTH;
+      if (!scale) return;
+      // Screen-sized labels stay readable even when the phone room scales down.
+      const labels: Array<{ id: ZoneId; text: string; x: number; y: number }> = [
+        { id: 'desk', text: '4. Desk', x: .22, y: .10 },
+        { id: 'starjar', text: '5. Jar', x: .64, y: .10 },
+        { id: 'bed', text: '1. Bed', x: .82, y: .34 },
+        { id: 'bookshelf', text: '3. Figurines', x: .23, y: .52 },
+        { id: 'door', text: '2. Boba', x: .82, y: .89 },
+        { id: 'cat', text: 'Find Soobin!', x: .29, y: .89 },
+        { id: 'cat', text: 'Meet Soobin', x: catPosRef.current.x / CANVAS_WIDTH, y: (catPosRef.current.y + 55) / CANVAS_HEIGHT }
+      ];
+      indicatorHitsRef.current = [];
+      ctx.save();
+      ctx.font = `bold ${11 / scale}px Silkscreen`;
+      ctx.textAlign = 'left';
+      const padding = 4 / scale;
+      const height = 21 / scale;
+      for (const label of labels) {
+        const width = ctx.measureText(label.text).width + padding * 2;
+        const left = Math.max(3 / scale, Math.min(CANVAS_WIDTH - width - 3 / scale, label.x * CANVAS_WIDTH - width / 2));
+        const top = Math.max(2 / scale, Math.min(CANVAS_HEIGHT - height - 2 / scale, label.y * CANVAS_HEIGHT - height / 2));
+        const visited = exploredZones.has(label.id);
+        ctx.fillStyle = visited ? '#166534' : '#78350f';
+        ctx.fillRect(left - 1 / scale, top - 1 / scale, width + 2 / scale, height + 2 / scale);
+        ctx.fillStyle = visited ? '#dcfce7' : '#fde047'; ctx.fillRect(left, top, width, height);
+        ctx.fillStyle = visited ? '#14532d' : '#451a03'; ctx.fillText(label.text, left + padding, top + 14 / scale);
+        indicatorHitsRef.current.push({ id: label.id, left, top, width, height });
+      }
+      ctx.restore();
+      return;
+    }
 
-    const active5 = coreZones.filter(z => z.id !== 'starjar');
-
-    active5.forEach(zone => {
+    indicatorHitsRef.current = [];
+    // All numbered destinations share the same indicator styling.
+    coreZones.forEach(zone => {
       const isPlayerNear = activeZone === zone.id;
       const isVisited = exploredZones.has(zone.id);
 
@@ -1654,19 +1705,21 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
       if (zone.id === 'cat') {
         // SPECIAL "PET ME!" HOVERING BADGE OVER SOOBIN
         const isPurring = catState === 'purring';
-        const label = isPlayerNear ? '✨ CLICK ON ME! ✨ Pet Soobin 💕' : (isPurring ? 'Hehe~ Purr! 💖' : 'Pet me! 💕');
-        ctx.font = 'bold 10px Silkscreen';
+        const sleepingInTree = timeOfDay === 'night' && Math.hypot(catPosRef.current.x - CAT_BED_POS.x, catPosRef.current.y - CAT_BED_POS.y) < 5;
+        const label = sleepingInTree ? 'Zzz… Cozy castle nap' : isPlayerNear ? '✨ CLICK ON ME! ✨ Pet Soobin 💕' : (isPurring ? 'Hehe~ Purr! 💖' : 'Pet me! 💕');
+        ctx.font = 'bold 12px Silkscreen';
         const tw = ctx.measureText(label).width;
         const bw = tw + 22;
-        const bh = isPlayerNear ? 28 : 22;
+        const bh = isPlayerNear ? 32 : 26;
         const bx = zx - bw / 2;
+        indicatorHitsRef.current.push({ id: zone.id, left: bx - 3, top: oy - bh - 3, width: bw + 6, height: bh + 6 });
 
         ctx.fillStyle = '#831843';
         ctx.fillRect(bx - 2, oy - bh - 2, bw + 4, bh + 4);
         ctx.fillStyle = isPurring ? '#fdf2f8' : (isPlayerNear ? '#fde047' : '#fff1f2');
         ctx.fillRect(bx, oy - bh, bw, bh);
         ctx.fillStyle = isPlayerNear ? '#78350f' : '#be185d';
-        ctx.fillText(label, bx + 11, oy - bh + (isPlayerNear ? 18 : 15));
+        ctx.fillText(label, bx + 11, oy - bh + (isPlayerNear ? 21 : 18));
 
         // Down pointer
         ctx.fillStyle = '#831843';
@@ -1675,13 +1728,14 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
         // PROMINENT "CLICK ON ME!" BANNER WHEN REACHED!
         const mainLabel = '✨ CLICK ON ME! ✨';
         const subLabel = `${zone.label} (or [E])`;
-        ctx.font = 'bold 11px Silkscreen';
+        ctx.font = 'bold 13px Silkscreen';
         const twMain = ctx.measureText(mainLabel).width;
-        ctx.font = '9px Silkscreen';
+        ctx.font = '11px Silkscreen';
         const twSub = ctx.measureText(subLabel).width;
         const bw = Math.max(twMain, twSub) + 30;
-        const bh = 34;
+        const bh = 40;
         const bx = zx - bw / 2;
+        indicatorHitsRef.current.push({ id: zone.id, left: bx - 3, top: oy - bh - 3, width: bw + 6, height: bh + 6 });
 
         // Animated energetic pulsing border
         const flashBorder = animFrame % 24 < 12 ? '#f59e0b' : '#ef4444';
@@ -1694,26 +1748,27 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
 
         // Main action text
         ctx.fillStyle = '#b91c1c';
-        ctx.font = 'bold 11px Silkscreen';
-        ctx.fillText(mainLabel, bx + 14, oy - bh + 15);
+        ctx.font = 'bold 13px Silkscreen';
+        ctx.fillText(mainLabel, bx + 14, oy - bh + 17);
 
         // Sublabel
         ctx.fillStyle = '#78350f';
-        ctx.font = 'bold 9px Silkscreen';
-        ctx.fillText(subLabel, bx + 14, oy - bh + 27);
+        ctx.font = 'bold 11px Silkscreen';
+        ctx.fillText(subLabel, bx + 14, oy - bh + 33);
 
         // Down pointer
         ctx.fillStyle = flashBorder;
         ctx.fillRect(zx - 5, oy + 2, 10, 4);
         ctx.fillRect(zx - 2, oy + 6, 4, 3);
-      } else if (!isVisited) {
+      } else if (!isVisited || zone.id === 'starjar') {
         // Floating "Explore me! ✨" indicator hovering overhead
         const label = `${zone.num}. ${zone.label}`;
-        ctx.font = '10px Silkscreen';
+        ctx.font = '12px Silkscreen';
         const tw = ctx.measureText(label).width;
         const bw = tw + 18;
-        const bh = 20;
+        const bh = 24;
         const bx = zx - bw / 2;
+        indicatorHitsRef.current.push({ id: zone.id, left: bx - 3, top: oy - bh - 3, width: bw + 6, height: bh + 6 });
 
         ctx.fillStyle = 'rgba(74, 40, 16, 0.9)';
         ctx.fillRect(bx - 1, oy - bh - 1, bw + 2, bh + 2);
@@ -1722,7 +1777,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
         ctx.fillRect(bx, oy - bh, bw, bh);
 
         ctx.fillStyle = '#78350f';
-        ctx.fillText(label, bx + 8, oy - bh + 14);
+        ctx.fillText(label, bx + 8, oy - bh + 17);
 
         ctx.fillStyle = '#fef08a';
         ctx.fillRect(zx - 2, oy - 1, 4, 3);
@@ -1736,23 +1791,20 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
       ctx.restore();
     });
 
-    // Star Jar prompt if player is near nightstand
-    if (activeZone === 'starjar') {
-      const zx = 635;
-      const oy = 90 + Math.sin(animFrame * 0.12) * 3;
-      ctx.save();
-      const label = '[E] Star Jar ⭐';
-      ctx.font = 'bold 11px Silkscreen';
-      const tw = ctx.measureText(label).width;
-      const bw = tw + 18;
-      ctx.fillStyle = '#5a3014';
-      ctx.fillRect(zx - bw / 2 - 2, oy - 26, bw + 4, 26);
-      ctx.fillStyle = '#fef3c7';
-      ctx.fillRect(zx - bw / 2, oy - 24, bw, 22);
-      ctx.fillStyle = '#b45309';
-      ctx.fillText(label, zx - bw / 2 + 8, oy - 9);
-      ctx.restore();
-    }
+
+    // A permanent invitation near Soobin's tree also opens her introduction.
+    ctx.save();
+    ctx.font = '12px Silkscreen';
+    ctx.textAlign = 'left';
+    const hint = 'Find Soobin to learn more!';
+    const hintWidth = ctx.measureText(hint).width + 16;
+    const hintLeft = 120;
+    ctx.fillStyle = '#78350f'; ctx.fillRect(hintLeft - 1, 567, hintWidth + 2, 24);
+    ctx.fillStyle = '#fff3cb'; ctx.fillRect(hintLeft, 568, hintWidth, 22);
+    ctx.fillStyle = '#581c87'; ctx.fillText(hint, hintLeft + 8, 583);
+    indicatorHitsRef.current.push({ id: 'cat', left: hintLeft, top: 568, width: hintWidth, height: 22 });
+    ctx.restore();
+
   };
 
   // Canvas click
@@ -1766,12 +1818,22 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     const clickX = (e.clientX - rect.left) * scaleX - viewOffsetRef.current;
     const clickY = (e.clientY - rect.top) * scaleY;
 
+    {
+      const label = indicatorHitsRef.current.find(r => clickX >= r.left && clickX <= r.left + r.width && clickY >= r.top && clickY <= r.top + r.height);
+      if (label) {
+        if (label.id === 'cat') onPetCat();
+        soundEngine.playInspect();
+        onInteract(label.id);
+        return;
+      }
+    }
+
     // Check if clicked directly on an interactive zone or overhead "Explore me!" badge
     for (const z of coreZones) {
       const zx = z.id === 'cat' ? catPosRef.current.x : z.x;
       const zy = z.id === 'cat' ? catPosRef.current.y : z.y;
       const hitCenter = Math.hypot(clickX - zx, clickY - zy) < z.radius;
-      const hitOverhead = Math.hypot(clickX - zx, clickY - z.overheadY) < 55;
+      const hitOverhead = Math.hypot(clickX - zx, clickY - (z.id === 'cat' ? zy - 45 : z.overheadY)) < 55;
       if (hitCenter || hitOverhead) {
         if (z.id === 'cat') {
           onPetCat();
@@ -1830,6 +1892,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
         <div className="absolute bottom-1.5 left-1.5 w-3 h-3 rounded-full bg-[#facc15] border border-[#78350f] z-10" />
         <div className="absolute bottom-1.5 right-1.5 w-3 h-3 rounded-full bg-[#facc15] border border-[#78350f] z-10" />
 
+        <div className="room-artwork">
         <canvas
           ref={canvasRef}
           width={CANVAS_WIDTH}
@@ -1838,8 +1901,10 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
           className="w-full h-auto max-h-[calc(100vh-215px)] aspect-[960/600] pixelated cursor-pointer rounded-md bg-[#eed9bf] block shadow-inner object-contain"
         />
 
+        </div>
+
         {isNapping && (
-          <div className="w-full flex flex-wrap items-center justify-between gap-2 px-2 pt-1 font-pixel text-xs text-[#fef08a]">
+          <div className="room-nap w-full flex flex-wrap items-center justify-between gap-2 px-2 pt-1 font-pixel text-xs text-[#fef08a]">
             <span role="status" aria-live="off">Cozy nap: {napCountdown}s remaining</span>
             <button onClick={onWakeEarly} className="min-h-11 px-3 rounded border border-[#d59f63] bg-[#783e1c] text-[#fff9f0]">
               Wake up early
@@ -1848,7 +1913,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
         )}
 
         {/* Dynamic Nearby Proximity Quick Bar */}
-        {!isNapping && <div className="flex flex-wrap items-center justify-between w-full px-2 pt-1 text-[11px] font-pixel text-[#fde047] gap-2">
+        {!isNapping && <div className="room-proximity flex flex-wrap items-center justify-between w-full px-2 pt-1 text-[11px] font-pixel text-[#fde047] gap-2">
           {activeZoneObj ? (
             <button
               onClick={() => {
@@ -1885,8 +1950,8 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
       </div>
 
       {/* Mobile D-Pad */}
-      <div className="flex items-center justify-between w-full max-w-xl mt-3 px-2 md:hidden">
-        <div className="relative w-36 h-36 bg-[#5a3014] rounded-full p-2 border-2 border-[#8c5028] shadow-md flex items-center justify-center">
+      <div className="room-movement flex items-center justify-between w-full max-w-xl mt-3 px-2 md:hidden">
+        <div className="room-dpad relative w-36 h-36 bg-[#5a3014] rounded-full p-2 border-2 border-[#8c5028] shadow-md flex items-center justify-center">
           <button
             onClick={() => handleDPadPress('up')}
             className="absolute top-1 left-1/2 -translate-x-1/2 w-11 h-11 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
@@ -1929,7 +1994,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
             }
           }}
           disabled={!activeZone}
-          className={`px-3 py-4 rounded-xl font-pixel text-sm uppercase tracking-wider border-2 cursor-pointer ${
+          className={`room-explore px-3 py-4 rounded-xl font-pixel text-sm uppercase tracking-wider border-2 cursor-pointer ${
             activeZone
               ? 'bg-[#d59f63] text-[#381a07] border-[#fff9f0] shadow-lg animate-bounce'
               : 'bg-[#5a3014] text-[#a88265] border-[#381a07] opacity-60'

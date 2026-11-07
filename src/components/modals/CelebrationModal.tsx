@@ -12,7 +12,7 @@ export const CelebrationModal: React.FC<CelebrationModalProps> = ({ onClose, onO
   return (
     <ModalWrapper
       title="🎉 Yay! You've Explored Rachel's Room! 🎉"
-      subtitle="All 5 Cozy Spaces Discovered · Special Keepsake Ready"
+      subtitle="All 5 Room Stops Discovered · Special Keepsake Ready"
       onClose={onClose}
       maxWidth="max-w-lg"
     >
@@ -30,7 +30,7 @@ export const CelebrationModal: React.FC<CelebrationModalProps> = ({ onClose, onO
               Thank You for Visiting My Little World!
             </h3>
             <p className="text-xs text-[#78350f] leading-relaxed">
-              You've discovered all 5 corners of Rachel Li's cozy room—from her Berkeley desk and POPMART figurines to Soobin the tuxedo cat and the cozy bed nook.
+              You've discovered all 5 corners of Rachel Li's cozy room—from her Berkeley desk and POPMART figurines to the cozy bed, boba break, and paper star jar.
             </p>
           </div>
         </div>
@@ -45,21 +45,17 @@ export const CelebrationModal: React.FC<CelebrationModalProps> = ({ onClose, onO
             <span className="text-xs">2. 🚪</span>
             <span className="text-xs font-pixel text-[#854d0e] font-semibold">Boba Door</span>
           </div>
-          <div className="p-2.5 bg-[#fdf2f8] rounded-lg border border-[#fbcfe8] flex items-center gap-2">
-            <span className="text-xs">3. 🐱</span>
-            <span className="text-xs font-pixel text-[#9d174d] font-semibold">Soobin the Cat</span>
-          </div>
           <div className="p-2.5 bg-[#f0fdf4] rounded-lg border border-[#86efac] flex items-center gap-2">
-            <span className="text-xs">4. 🧸</span>
+            <span className="text-xs">3. 🧸</span>
             <span className="text-xs font-pixel text-[#166534] font-semibold">POPMART Shelf</span>
           </div>
           <div className="p-2.5 bg-[#e0f2fe] rounded-lg border border-[#7dd3fc] flex items-center gap-2">
-            <span className="text-xs">5. 💻</span>
+            <span className="text-xs">4. 💻</span>
             <span className="text-xs font-pixel text-[#0369a1] font-semibold">My Desk & Cal</span>
           </div>
-          <div className="p-2.5 bg-[#fef3c7] rounded-lg border border-[#f59e0b] flex items-center gap-2">
-            <span className="text-xs">⭐ 🫙</span>
-            <span className="text-xs font-pixel text-[#b45309] font-semibold">Paper Star Jar</span>
+          <div className="p-2.5 bg-[#fdf2f8] rounded-lg border border-[#fbcfe8] flex items-center gap-2">
+            <span className="text-xs">5. ⭐</span>
+            <span className="text-xs font-pixel text-[#9d174d] font-semibold">Paper Star Jar</span>
           </div>
         </div>
 

@@ -55,7 +55,7 @@ export default function App() {
   const [napCountdown, setNapCountdown] = useState<number>(20);
 
   // THE 5 EXACT EXPLORATION AREAS (Numbered 1 to 5, Paper Star Jar is final reward)
-  const CORE_5_ZONES: ZoneId[] = ['bed', 'door', 'cat', 'bookshelf', 'desk'];
+  const CORE_5_ZONES: ZoneId[] = ['bed', 'door', 'bookshelf', 'desk', 'starjar'];
 
   const [exploredZones, setExploredZones] = useState<Set<ZoneId>>(() => {
     try {
@@ -135,8 +135,8 @@ export default function App() {
     // Check if all 5 areas are explored!
     const allExplored = CORE_5_ZONES.every(z => exploredZones.has(z));
     if (allExplored && !hasShownCompletionModal) {
-      setHasShownCompletionModal(true);
       const timer = setTimeout(() => {
+        setHasShownCompletionModal(true);
         soundEngine.playFanfare();
         setShowCelebration(true);
       }, 500);
@@ -145,12 +145,7 @@ export default function App() {
   }, [exploredZones, hasShownCompletionModal]);
 
   const handleOpenZone = (zone: ZoneId | null) => {
-    if (zone === 'cat') {
-      setChatOpen(true);
-      setActiveModal(null);
-    } else {
-      setActiveModal(zone);
-    }
+    setActiveModal(zone);
     if (zone && CORE_5_ZONES.includes(zone)) {
       setExploredZones(prev => new Set(prev).add(zone));
     }
@@ -196,9 +191,9 @@ export default function App() {
   const quickNavItems: Array<{ id: ZoneId; label: string; num: number; icon: React.ReactNode }> = [
     { id: 'bed', label: '1. Cozy Bed', num: 1, icon: <Bed className="w-3.5 h-3.5 text-purple-300" /> },
     { id: 'door', label: '2. Boba Break', num: 2, icon: <DoorClosed className="w-3.5 h-3.5 text-amber-300" /> },
-    { id: 'cat', label: '3. Meet Soobin', num: 3, icon: <Heart className="w-3.5 h-3.5 text-pink-300" /> },
-    { id: 'bookshelf', label: '4. Figurines', num: 4, icon: <Sparkles className="w-3.5 h-3.5 text-yellow-300" /> },
-    { id: 'desk', label: '5. About & Work', num: 5, icon: <Laptop className="w-3.5 h-3.5 text-cyan-300" /> },
+    { id: 'bookshelf', label: '3. Figurines', num: 3, icon: <Sparkles className="w-3.5 h-3.5 text-yellow-300" /> },
+    { id: 'desk', label: '4. Rachel’s Desk', num: 4, icon: <Laptop className="w-3.5 h-3.5 text-cyan-300" /> },
+    { id: 'starjar', label: '5. Star Jar', num: 5, icon: <Star className="w-3.5 h-3.5 text-yellow-300" /> },
   ];
 
   const exploredCount = CORE_5_ZONES.filter(z => exploredZones.has(z)).length;
@@ -251,7 +246,7 @@ export default function App() {
           <button
             onClick={() => {
               soundEngine.playInspect();
-              setActiveModal('starjar');
+              handleOpenZone('starjar');
             }}
             className="px-2 py-1 font-pixel text-[11px] rounded bg-[#581c87] hover:bg-[#6b21a8] text-[#fde047] border border-[#a855f7] flex items-center gap-1 cursor-pointer shadow-xs"
             title="Open bedside paper star jar"
@@ -429,7 +424,7 @@ export default function App() {
       <footer className="room-footer min-h-11 shrink-0 flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-[10px] font-pixel text-[#a78bfa]/80 bg-[#161020] border-t border-[#3b2d4f]">
         <span className="hidden md:inline">Designed & coded with warmth by Rachel Li · Cal MDes '27 🐻</span>
         <button
-          onClick={() => setActiveModal('starjar')}
+          onClick={() => handleOpenZone('starjar')}
           className="min-h-11 text-left text-[#fde047] hover:underline cursor-pointer flex items-center gap-1"
         >
           ⭐ Star Jar ({Array.from(exploredZones).filter(z => CORE_5_ZONES.includes(z)).length}/5 Explored)
@@ -451,7 +446,7 @@ export default function App() {
           onClose={() => setShowCelebration(false)}
           onOpenStarJar={() => {
             setShowCelebration(false);
-            setActiveModal('starjar');
+            handleOpenZone('starjar');
           }}
         />
       )}
@@ -475,6 +470,7 @@ export default function App() {
           catState={catState}
           onPetCat={handlePetCat}
           onFeedCat={handleFeedCat}
+          onChat={() => { setActiveModal(null); setChatOpen(true); }}
         />
       )}
       {activeModal === 'bookshelf' && (

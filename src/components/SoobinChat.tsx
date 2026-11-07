@@ -141,7 +141,7 @@ export function SoobinChat({ open, onOpen, onClose, onPetAndFeed, obscured }: {
   </section>;
 
   if (mobile) return <>
-    {!obscured && !open && <button type="button" className="soobin-bubble" onClick={onOpen} aria-label="Chat with Soobin" title="Chat with Soobin"><SoobinFace /><span aria-hidden="true">♥</span></button>}
+    {!obscured && !open && <button type="button" className="soobin-bubble" onClick={onOpen} aria-label="Chat with Soobin" title="Chat with Soobin"><SoobinFace /><span aria-hidden="true">♥</span><span className="soobin-chat-hint" aria-hidden="true">Chat!</span></button>}
     {!obscured && open && <MobileDialog onClose={onClose}>{panel}</MobileDialog>}
   </>;
   return <aside className={`soobin-desktop ${open ? '' : 'is-closed'}`} aria-label="Soobin chat">

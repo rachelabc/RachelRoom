@@ -82,7 +82,7 @@ export async function chatHandler(req: IncomingMessage & { body?: unknown }, res
   if (bucket.busy) return reply(res, 429, { error: 'One question at a time, please. My paws are typing!' });
   bucket.busy = true;
   try {
-    const model = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
+    const model = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },

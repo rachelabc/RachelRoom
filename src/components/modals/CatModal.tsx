@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ModalWrapper } from '../ModalWrapper';
 import { TUXEDO_CAT_IMAGE } from '../../data/portfolioData';
-import { Heart, Sparkles, Fish, Crown, Music } from 'lucide-react';
+import { Heart, Sparkles, Fish, Crown, Music, MessageCircle } from 'lucide-react';
 import { soundEngine } from '../../utils/soundEngine';
 
 interface CatModalProps {
@@ -9,13 +9,15 @@ interface CatModalProps {
   catState: 'sleeping' | 'purring' | 'following' | 'eating';
   onPetCat: () => void;
   onFeedCat: () => void;
+  onChat: () => void;
 }
 
 export const CatModal: React.FC<CatModalProps> = ({
   onClose,
   catState,
   onPetCat,
-  onFeedCat
+  onFeedCat,
+  onChat
 }) => {
   const [purrCount, setPurrCount] = useState<number>(14);
   const [reaction, setReaction] = useState<string>("Soobin gazes at you like royalty with emerald eyes.");
@@ -66,6 +68,13 @@ export const CatModal: React.FC<CatModalProps> = ({
               </p>
             </div>
           </div>
+        </div>
+
+        <div className="p-3 rounded-xl bg-[#f3e8ff] border-2 border-[#c084fc] space-y-2">
+          <p className="text-sm text-[#581c87]">Meow! Want the inside scoop on Rachel? Ask me about her design projects, favorite boba, and our late-night adventures.</p>
+          <button onClick={onChat} className="w-full pixel-wood-button rounded-xl px-4 py-3 font-pixel text-xs flex items-center justify-center gap-2">
+            <MessageCircle size={18} /> Chat with Soobin
+          </button>
         </div>
 
         {/* Fact Cards */}
