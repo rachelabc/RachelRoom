@@ -72,3 +72,104 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #7d4926;
 }
+
+/* Room controls and responsive canvas retain the existing pixel-art palette. */
+.room-header { min-height: 56px; padding-top: 4px; padding-bottom: 4px; }
+.room-settings button { min-height: 44px; min-width: 44px; }
+.room-hud button { min-width: 44px; min-height: 44px; }
+.room-hud button svg { width: 16px; height: 16px; }
+button, a { touch-action: manipulation; }
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 3px solid #a855f7; outline-offset: 3px; }
+[role="dialog"] { overflow-wrap: anywhere; }
+[role="dialog"] button, [role="dialog"] a { min-height: 44px; }
+[role="dialog"] p { font-size: max(0.875rem, 1em); }
+@media (max-width: 767px) {
+  .room-header > div:first-child { flex: 1; }
+  .room-header > div:first-child > span:first-child { overflow-wrap: anywhere; }
+  .room-main { gap: 12px; padding: 8px; }
+  .room-canvas { flex: none; }
+  .room-canvas > div:first-child { max-height: none; }
+  .room-canvas canvas { max-height: none; }
+  .room-footer { justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-bounce, .animate-ping { animation: none !important; }
+}
+@media (min-width: 768px) {
+  .room-canvas > div:first-child { width: min(100%, calc((100dvh - 330px) * 1.6 + 24px)); max-height: none; }
+  .room-canvas canvas { max-height: none; }
+}
+@media (min-width: 1024px) {
+  .room-main { max-width: 1280px; }
+  .room-canvas { max-width: none; }
+  .room-canvas > div:first-child { width: min(100%, calc((100dvh - 330px) * 2.1 + 24px)); }
+  .room-canvas canvas { height: min(calc(100dvh - 330px), 615px); aspect-ratio: auto; object-fit: fill; }
+  .room-main > nav { max-width: 1200px; }
+}
+
+/* Soobin's chat shares the room's wood, cream and purple palette. */
+.room-scene { width: 100%; min-height: 0; }
+.soobin-face { width: 44px; height: 44px; flex-shrink: 0; image-rendering: pixelated; }
+.soobin-panel { width: 100%; height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 14px; color: #4a2810; }
+.soobin-header { display: flex; align-items: center; gap: 8px; padding: 10px; background: #8c5028; color: #fff9f0; border-bottom: 3px solid #5a3014; flex-shrink: 0; }
+.soobin-header h2 { font-size: 12px; line-height: 1.6; }
+.soobin-header p { font-size: 12px; color: #fef08a; }
+.soobin-close { margin-left: auto; display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border: 2px solid #d59f63; background: #5a3014; border-radius: 8px; }
+.soobin-chat-actions { display: flex; justify-content: space-between; gap: 8px; padding: 0 12px; border-bottom: 1px solid #dcc5ac; }
+.soobin-chat-actions button { display: flex; align-items: center; gap: 4px; min-height: 44px; font-size: 12px; color: #6b21a8; }
+.soobin-messages { flex: 1; min-height: 70px; overflow-y: auto; overscroll-behavior: contain; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+.soobin-message { max-width: 94%; padding: 10px; border: 1px solid #d8b4fe; border-radius: 12px 12px 12px 2px; background: #f3e8ff; font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; flex-shrink: 0; }
+.soobin-message.user { margin-left: auto; background: #fff3cb; border-color: #d59f63; border-radius: 12px 12px 2px 12px; }
+.soobin-speaker { font-family: 'Silkscreen', monospace; font-size: 10px; color: #6b21a8; }
+.soobin-message p { white-space: pre-wrap; }
+.soobin-thinking { font-size: 13px; color: #6b21a8; }
+.soobin-suggestions { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 10px 8px; }
+.soobin-suggestions button { min-height: 44px; padding: 6px 10px; border: 1px solid #c4a7dd; border-radius: 12px; background: #faf5ff; font-size: 12px; text-align: left; }
+.soobin-composer { flex-shrink: 0; padding: 10px; border-top: 2px solid #d59f63; background: #f8eddd; }
+.soobin-composer label { display: block; font-size: 11px; margin-bottom: 6px; }
+.soobin-input-row { display: flex; gap: 6px; }
+.soobin-input-row textarea { min-width: 0; flex: 1; resize: none; padding: 8px; font-size: 16px; line-height: 1.4; background: #fffdfa; border: 2px solid #ae8056; border-radius: 8px; color: #4a2810; }
+.soobin-input-row button { width: 48px; display: grid; place-items: center; border-radius: 8px; }
+.soobin-panel button:disabled { opacity: .55; cursor: default; }
+.soobin-disclosure { font-size: 10px !important; line-height: 1.5; margin-top: 6px; color: #70553e; }
+.soobin-error { font-size: 13px !important; color: #9f1239; margin-bottom: 8px; }
+.soobin-bubble { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); width: 60px; height: 60px; z-index: 40; display: grid; place-items: center; border: 3px solid #d59f63; border-radius: 50%; background: #352147; box-shadow: 0 4px 14px #0006; }
+.soobin-bubble span { position: absolute; top: -4px; right: 0; color: #f9a8d4; }
+.soobin-mobile-backdrop { position: fixed; left: 0; right: 0; z-index: 60; padding: 12px; background: #151020aa; display: flex; align-items: center; justify-content: center; }
+.soobin-mobile-dialog { width: 100%; max-width: 440px; height: 100%; max-height: 660px; min-height: 0; }
+.soobin-reopen { display: flex; align-items: center; gap: 8px; padding: 10px; font-size: 12px; border-radius: 12px; }
+/* A reserved bottom dock keeps the floating cat clear of game controls. */
+@media (max-width: 1099px) {
+  body { background: #241c30; }
+  .room-app { height: calc(100dvh - 80px - env(safe-area-inset-bottom, 0px)); min-height: 0; overflow-y: auto; }
+  .room-main { flex: 0 0 auto; }
+  .room-scene { flex-shrink: 0; }
+  .room-footer { padding-right: 12px; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+  .room-footer button { overflow-wrap: anywhere; }
+}
+@media (min-width: 1100px) {
+  .room-main { max-width: none; }
+  .room-scene { flex: 1; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; align-items: center; }
+  .room-scene:has(.soobin-desktop.is-closed) { grid-template-columns: minmax(0, 1fr) auto; }
+  .soobin-desktop { height: min(calc(100dvh - 270px), 680px); min-height: 0; }
+  .soobin-desktop.is-closed { height: auto; }
+  .room-scene .room-canvas canvas { height: min(calc(100dvh - 330px), calc((100vw * 2 / 3 - 48px) / 1.6), 615px); }
+  .room-scene .room-canvas > div:first-child { width: 100%; }
+}
+@media (max-height: 500px) {
+  .soobin-mobile-backdrop { padding: 4px; }
+  .soobin-mobile-dialog .soobin-header { padding: 4px 8px; }
+  .soobin-mobile-dialog .soobin-chat-actions, .soobin-mobile-dialog .soobin-suggestions, .soobin-mobile-dialog .soobin-disclosure { display: none; }
+  .soobin-mobile-dialog .soobin-composer { padding: 6px; }
+}
+.soobin-mobile-dialog.is-compact .soobin-chat-actions,
+.soobin-mobile-dialog.is-compact .soobin-suggestions,
+.soobin-mobile-dialog.is-compact .soobin-disclosure { display: none; }
+.soobin-mobile-dialog.is-compact .soobin-messages { min-height: 0; }
+.soobin-mobile-dialog.is-compact .soobin-header { padding: 4px 8px; }
+.soobin-mobile-dialog.is-compact .soobin-composer { padding: 6px; }
+.soobin-mobile-dialog.is-compact .soobin-error { max-height: 56px; overflow-y: auto; }
+@media (min-width: 1100px) and (max-height: 720px) {
+  .soobin-desktop .soobin-suggestions { display: none; }
+  .soobin-desktop .soobin-messages { min-height: 0; }
+}

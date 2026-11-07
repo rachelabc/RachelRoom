@@ -7,12 +7,12 @@ export const TUXEDO_CAT_IMAGE = '/src/assets/images/tuxedo_cat_portrait_17939236
 
 export const ABOUT_ME = {
   name: "Rachel Li",
-  title: "UC Berkeley CS & Design · Creative Frontend Engineer",
+  title: "UC Berkeley Master of Design · Creative Frontend Engineer",
   pronouns: "she/her",
   tagline: "Building digital sanctuaries where playful aesthetics meet crisp engineering.",
   school: "University of California, Berkeley",
-  major: "Computer Science & Cognitive Science / New Media",
-  graduation: "Class of 2026 · Go Bears! 🐻",
+  major: "Master of Design",
+  graduation: "Cal MDes '27 · Go Bears! 🐻",
   bio: "Hi there! I'm Rachel. Welcome to my cozy little slice of the web! I craft thoughtful, tactile web apps, interactive games, and delightful user interfaces. When I'm not writing TypeScript or training neural nets, I'm usually unboxing POPMART blind boxes, hunting down the best roasted oolong boba on Telegraph, or petting Soobin my tuxedo cat.",
   quickFacts: [
     { label: "Current Location", value: "Berkeley, CA (Southside)" },

@@ -1,0 +1,61 @@
+{
+  "name": "Rachel Li",
+  "introduction": "UI/UX designer focused on research, interaction, and visual design. Master of Design student at UC Berkeley, Cal MDes '27.",
+  "education": "UC Berkeley Master of Design, class of 2027. Previously earned a BA in Cognitive Science with a minor in Data Science (2022–2026).",
+  "portfolio": "https://rachelliportfolio.framer.website/",
+  "favoriteColor": "Purple",
+  "personalNotes": [
+    "Rachel is a night owl and has a hard time waking up.",
+    "She loves boba, especially milk tea from HEYTEA and TP TEA.",
+    "She describes herself as sweet and kind. Soobin sometimes tricks her into thinking she is hungry even after she has eaten. Treat this as a warm cat joke, never as a claim that Rachel is weak or easily manipulated.",
+    "She loves playing with Soobin even very late at night and responds whenever Soobin meows.",
+    "She enjoys late-night potato chips and air-fried fries. Soobin is amused that Rachel is still hungry too.",
+    "Soobin is Rachel's female tuxedo cat and the affectionate, slightly sassy guide to this room."
+  ],
+  "projects": [
+    {
+      "name": "Magnetic Mementos",
+      "summary": "A physical-digital storytelling project connecting collected magnets with personal memories. Lifting and replacing magnets triggers LED feedback; QR codes connect to digital stories. Iteration focused on clearer prompts and interaction cues.",
+      "tools": "Adobe Illustrator, Arduino Uno, laser-cut fabrication",
+      "context": "Fall 2026, Master of Design Technology Design Foundations",
+      "url": "https://rachelliportfolio.framer.website/magneticmementos"
+    },
+    {
+      "name": "RoomPalette Generative AI",
+      "summary": "An interior-design exploration interface building on RoomDreaming. Rachel designed UI, visual hierarchy, and interaction flows for Style and Palette modes so people can progressively refine references, materials, colors, and textures.",
+      "role": "UI Designer, National Taiwan University Human Computer Interaction Lab, June–August 2024",
+      "tools": "Figma, AI models",
+      "url": "https://rachelliportfolio.framer.website/room"
+    },
+    {
+      "name": "48th Generation: Association of Northern Chinese Schools",
+      "summary": "A community website and visual identity project. Rachel worked on clearer hierarchy, navigation, quick links, and recognizable icon-and-text buttons for Chinese American families and other community members.",
+      "role": "Alumni Student Designer, June–August 2025",
+      "tools": "Google Sites, Figma, design iterations",
+      "url": "https://rachelliportfolio.framer.website/ancss"
+    },
+    {
+      "name": "The Fantastic Lid",
+      "summary": "A group cooking-safety concept for UC Berkeley DESINV 15. Rachel contributed user research and concept development, including interview questions, an interlocking lid concept, color-based heat indicators, and the final poster. This is a design concept, not a proven commercial product.",
+      "role": "User Research and Concept Development, August–December 2023",
+      "url": "https://rachelliportfolio.framer.website/fantasticlid"
+    }
+  ],
+  "roomGuide": {
+    "desk": "About & Work opens Rachel's introduction and a link to her full portfolio.",
+    "bed": "Cozy Bed offers a 20-second nap.",
+    "door": "Boba Break sends the avatar on a short boba run.",
+    "bookshelf": "Figurines opens the POPMART shelf and blind-box interaction.",
+    "cat": "Pet and feed Soobin through her existing cat popup.",
+    "starJar": "Explore all five areas and visit the paper Star Jar."
+  },
+  "sources": [
+    "Rachel's direct notes in this conversation (personal interests and cat stories; education corrected to Cal MDes '27).",
+    "https://rachelliportfolio.framer.website/aboutme",
+    "https://rachelliportfolio.framer.website/magneticmementos",
+    "https://rachelliportfolio.framer.website/room",
+    "https://rachelliportfolio.framer.website/ancss",
+    "https://rachelliportfolio.framer.website/fantasticlid"
+  ],
+  "boundaries": "Do not invent awards, user counts, project performance metrics, employers, private contact details, or other personal facts. Do not infer a computer-science degree. If information is missing, say Rachel has not shared that detail and offer her portfolio."
+}

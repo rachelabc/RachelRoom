@@ -17,30 +17,6 @@ export const DeskModal: React.FC<DeskModalProps> = ({ onClose }) => {
       maxWidth="max-w-2xl"
     >
       <div className="space-y-4 text-[#4a3b32]">
-        {/* 1. Character Intro Card (Who I Am) */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 bg-[#f8f1e5] rounded-xl border-2 border-[#d59f63] shadow-xs">
-          <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl bg-[#003262] text-[#fdb515] border-2 border-[#783e1c] shadow-md flex flex-col items-center justify-center shrink-0 font-pixel font-bold">
-            <span className="text-[10px]">CAL</span>
-            <span className="text-xl">🐻</span>
-          </div>
-          <div className="space-y-1.5 text-center sm:text-left">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <span className="font-pixel text-xs text-[#783e1c] bg-[#e9d5ff] px-2 py-0.5 rounded-full border border-[#c084fc] font-bold">
-                ABOUT RACHEL LI
-              </span>
-              <span className="text-xs text-[#78350f] font-semibold">
-                UC Berkeley '26 🐻
-              </span>
-            </div>
-            <h3 className="font-pixel text-sm sm:text-base font-bold text-[#451a03]">
-              {ABOUT_ME.name}
-            </h3>
-            <p className="text-xs sm:text-sm text-[#57361e] leading-relaxed">
-              Hi! I'm Rachel, a Computer Science & Design student at UC Berkeley. I build digital sanctuaries where playful aesthetics, tactile indie game nostalgia, and crisp engineering meet.
-            </p>
-          </div>
-        </div>
-
         {/* 2. Direct Portfolio Link Button */}
         <div className="p-4 bg-gradient-to-r from-[#fef3c7] via-[#fde68a] to-[#fed7aa] rounded-xl border-2 border-[#d97706] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="space-y-0.5 text-center sm:text-left">
@@ -63,6 +39,30 @@ export const DeskModal: React.FC<DeskModalProps> = ({ onClose }) => {
             <span>Visit Full Portfolio</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
+        </div>
+
+        {/* 1. Character Intro Card (Who I Am) */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 bg-[#f8f1e5] rounded-xl border-2 border-[#d59f63] shadow-xs">
+          <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl bg-[#003262] text-[#fdb515] border-2 border-[#783e1c] shadow-md flex flex-col items-center justify-center shrink-0 font-pixel font-bold">
+            <span className="text-[10px]">CAL</span>
+            <span className="text-xl">🐻</span>
+          </div>
+          <div className="space-y-1.5 text-center sm:text-left">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <span className="font-pixel text-xs text-[#783e1c] bg-[#e9d5ff] px-2 py-0.5 rounded-full border border-[#c084fc] font-bold">
+                ABOUT RACHEL LI
+              </span>
+              <span className="text-xs text-[#78350f] font-semibold">
+                Cal MDes '27 🐻
+              </span>
+            </div>
+            <h3 className="font-pixel text-sm sm:text-base font-bold text-[#451a03]">
+              {ABOUT_ME.name}
+            </h3>
+            <p className="text-xs sm:text-sm text-[#57361e] leading-relaxed">
+              Hi! I'm Rachel, a Master of Design student at UC Berkeley. I build digital sanctuaries where playful aesthetics, tactile indie game nostalgia, and crisp engineering meet.
+            </p>
+          </div>
         </div>
 
         {/* 3. Current Classes at UC Berkeley */}

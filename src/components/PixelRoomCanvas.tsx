@@ -33,6 +33,26 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
 
   const CANVAS_WIDTH = 960;
   const CANVAS_HEIGHT = 600;
+  const viewOffsetRef = useRef(0);
+
+  // A wider desktop view reveals extra wall/floor, rather than widening sprites.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      const { width, height } = canvas.getBoundingClientRect();
+      if (!height) return;
+      const viewWidth = Math.max(CANVAS_WIDTH, Math.round(CANVAS_HEIGHT * width / height));
+      if (canvas.width !== viewWidth) canvas.width = viewWidth;
+      viewOffsetRef.current = (viewWidth - CANVAS_WIDTH) / 2;
+      const context = canvas.getContext('2d');
+      if (context) context.imageSmoothingEnabled = false;
+    };
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+    resize();
+    return () => observer.disconnect();
+  }, []);
 
   // Player state: start near center
   const [player, setPlayer] = useState({
@@ -133,11 +153,11 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
 
   // THE 5 CORE EXPLORATION AREAS + PAPER STAR JAR
   const coreZones: Array<{ id: ZoneId; name: string; x: number; y: number; radius: number; label: string; overheadY: number; num: number }> = [
-    { id: 'bed', name: '1. The Bed & Plushies', x: 770, y: 220, radius: 135, label: '1. The Cozy Bed', overheadY: 95, num: 1 },
-    { id: 'door', name: '2. The Bedroom Door', x: 885, y: 515, radius: 130, label: '2. The Bedroom Door', overheadY: 450, num: 2 },
-    { id: 'cat', name: '3. Soobin the Cat Tree', x: catPosRef.current.x, y: catPosRef.current.y, radius: 115, label: '3. Soobin the Cat', overheadY: catPosRef.current.y - 45, num: 3 },
-    { id: 'bookshelf', name: '4. POPMART Shelf', x: 95, y: 310, radius: 125, label: '4. POPMART Shelf', overheadY: 195, num: 4 },
-    { id: 'desk', name: '5. My Desk & Cal', x: 185, y: 175, radius: 125, label: '5. My Desk & Cal', overheadY: 65, num: 5 },
+    { id: 'bed', name: '1. The Bed & Plushies', x: 770, y: 220, radius: 135, label: 'Cozy Bed', overheadY: 95, num: 1 },
+    { id: 'door', name: '2. The Bedroom Door', x: 885, y: 515, radius: 130, label: 'Boba Break', overheadY: 450, num: 2 },
+    { id: 'cat', name: '3. Soobin the Cat Tree', x: catPosRef.current.x, y: catPosRef.current.y, radius: 115, label: 'Meet Soobin', overheadY: catPosRef.current.y - 45, num: 3 },
+    { id: 'bookshelf', name: '4. POPMART Shelf', x: 95, y: 310, radius: 125, label: 'Figurines', overheadY: 195, num: 4 },
+    { id: 'desk', name: '5. My Desk & Cal', x: 185, y: 175, radius: 125, label: 'About & Work', overheadY: 65, num: 5 },
     { id: 'starjar', name: 'Paper Star Jar', x: 635, y: 140, radius: 85, label: 'Origami Star Jar', overheadY: 90, num: 6 }
   ];
 
@@ -177,6 +197,10 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
   // Keyboard handlers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.querySelector('[role="dialog"]')) {
+        keysPressed.current = {};
+        return;
+      }
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
         return;
       }
@@ -186,6 +210,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
         e.preventDefault();
         keysPressed.current[key] = true;
         if (humanSleepingInBed) {
+          if (isNapping) onWakeEarly?.();
           setHumanSleepingInBed(false);
           setPlayer(prev => ({ ...prev, x: 740, y: 260, direction: 'down' }));
         }
@@ -218,7 +243,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [activeZone, activeModal, onInteract, onPetCat, humanSleepingInBed]);
+  }, [activeZone, activeModal, onInteract, onPetCat, humanSleepingInBed, isNapping, onWakeEarly]);
 
   // Boba Run Sequence: Avatar walks into door, disappears, and steps back out holding boba
   useEffect(() => {
@@ -265,8 +290,10 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     const gameLoop = () => {
       animFrame++;
 
-      // Update movement
-      if (!activeModal && !humanSleepingInBed) {
+      // Pause room keyboard movement while any popup is open.
+      const dialogOpen = Boolean(document.querySelector('[role="dialog"]'));
+      if (dialogOpen) keysPressed.current = {};
+      if (!dialogOpen && !activeModal && !humanSleepingInBed) {
         const speed = 2.8;
         let dx = 0;
         let dy = 0;
@@ -447,25 +474,28 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [activeModal, timeOfDay, catState, humanSleepingInBed, player, exploredZones]);
+  }, [activeModal, timeOfDay, catState, humanSleepingInBed, player, exploredZones, isNapping, napCountdown, isBobaRunning, playerInDoor, hasBoba]);
 
   // Main rendering routine
   const renderRoom = (ctx: CanvasRenderingContext2D, animFrame: number) => {
+    const offset = viewOffsetRef.current;
+    const viewWidth = CANVAS_WIDTH + offset * 2;
+    ctx.setTransform(1, 0, 0, 1, offset, 0);
     // 1. FLOOR
     ctx.fillStyle = '#eed9bf';
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.fillRect(-offset, 0, viewWidth, CANVAS_HEIGHT);
 
     const plankH = 26;
     for (let y = 100; y < CANVAS_HEIGHT; y += plankH) {
       ctx.fillStyle = '#dfc3a3';
-      ctx.fillRect(0, y, CANVAS_WIDTH, 2);
+      ctx.fillRect(-offset, y, viewWidth, 2);
 
       ctx.fillStyle = 'rgba(195, 160, 125, 0.22)';
-      ctx.fillRect(0, y + 8, CANVAS_WIDTH, 1);
-      ctx.fillRect(0, y + 17, CANVAS_WIDTH, 1);
+      ctx.fillRect(-offset, y + 8, viewWidth, 1);
+      ctx.fillRect(-offset, y + 17, viewWidth, 1);
 
-      const offset = (Math.floor(y / plankH) % 3) * 70;
-      for (let x = offset; x < CANVAS_WIDTH; x += 180) {
+      const plankOffset = (Math.floor(y / plankH) % 3) * 70;
+      for (let x = plankOffset - Math.ceil(offset / 180) * 180; x < CANVAS_WIDTH + offset; x += 180) {
         ctx.fillStyle = '#caa582';
         ctx.fillRect(x, y + 2, 2, plankH - 2);
       }
@@ -473,10 +503,10 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
 
     // 2. WALLS & MOLDING
     ctx.fillStyle = '#e8dff0';
-    ctx.fillRect(0, 0, CANVAS_WIDTH, 102);
+    ctx.fillRect(-offset, 0, viewWidth, 102);
 
     ctx.fillStyle = '#ded1e8';
-    for (let x = 14; x < CANVAS_WIDTH; x += 32) {
+    for (let x = 14 - Math.ceil(offset / 32) * 32; x < CANVAS_WIDTH + offset; x += 32) {
       ctx.fillRect(x, 0, 3, 100);
       ctx.fillStyle = '#eed9ee';
       ctx.fillRect(x - 3, 34, 2, 2);
@@ -485,9 +515,9 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     }
 
     ctx.fillStyle = '#8c5936';
-    ctx.fillRect(0, 98, CANVAS_WIDTH, 7);
+    ctx.fillRect(-offset, 98, viewWidth, 7);
     ctx.fillStyle = '#6d4023';
-    ctx.fillRect(0, 103, CANVAS_WIDTH, 3);
+    ctx.fillRect(-offset, 103, viewWidth, 3);
 
     // 3. ARCHED WINDOW
     const wx = 480;
@@ -1536,25 +1566,25 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
   const renderLightingOverlay = (ctx: CanvasRenderingContext2D) => {
     if (timeOfDay === 'night') {
       ctx.fillStyle = 'rgba(18, 16, 45, 0.46)';
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.fillRect(-viewOffsetRef.current, 0, CANVAS_WIDTH + viewOffsetRef.current * 2, CANVAS_HEIGHT);
 
       const deskLamp = ctx.createRadialGradient(235, 125, 6, 235, 125, 140);
       deskLamp.addColorStop(0, 'rgba(254, 240, 138, 0.32)');
       deskLamp.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = deskLamp;
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.fillRect(-viewOffsetRef.current, 0, CANVAS_WIDTH + viewOffsetRef.current * 2, CANVAS_HEIGHT);
 
       const bedLamp = ctx.createRadialGradient(635, 145, 6, 635, 145, 100);
       bedLamp.addColorStop(0, 'rgba(254, 240, 138, 0.25)');
       bedLamp.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = bedLamp;
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.fillRect(-viewOffsetRef.current, 0, CANVAS_WIDTH + viewOffsetRef.current * 2, CANVAS_HEIGHT);
     } else if (timeOfDay === 'rainy') {
       ctx.fillStyle = 'rgba(40, 55, 80, 0.25)';
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.fillRect(-viewOffsetRef.current, 0, CANVAS_WIDTH + viewOffsetRef.current * 2, CANVAS_HEIGHT);
     } else {
       ctx.fillStyle = 'rgba(255, 240, 210, 0.08)';
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.fillRect(-viewOffsetRef.current, 0, CANVAS_WIDTH + viewOffsetRef.current * 2, CANVAS_HEIGHT);
     }
 
     // 20-second Nap feedback banner
@@ -1678,7 +1708,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
         ctx.fillRect(zx - 2, oy + 6, 4, 3);
       } else if (!isVisited) {
         // Floating "Explore me! ✨" indicator hovering overhead
-        const label = `${zone.num}. Explore me! ✨`;
+        const label = `${zone.num}. ${zone.label}`;
         ctx.font = '10px Silkscreen';
         const tw = ctx.measureText(label).width;
         const bw = tw + 18;
@@ -1733,7 +1763,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickX = (e.clientX - rect.left) * scaleX - viewOffsetRef.current;
     const clickY = (e.clientY - rect.top) * scaleY;
 
     // Check if clicked directly on an interactive zone or overhead "Explore me!" badge
@@ -1753,6 +1783,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
     }
 
     if (humanSleepingInBed) {
+      if (isNapping) onWakeEarly?.();
       setHumanSleepingInBed(false);
     }
 
@@ -1767,6 +1798,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
   const handleDPadPress = (dir: Direction) => {
     const speed = 28;
     if (humanSleepingInBed) {
+      if (isNapping) onWakeEarly?.();
       setHumanSleepingInBed(false);
       setPlayer({ x: 740, y: 260, direction: 'down', isWalking: true, frame: 0 });
       return;
@@ -1790,7 +1822,7 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
   const activeZoneObj = coreZones.find(z => z.id === activeZone);
 
   return (
-    <div className="relative flex flex-col items-center justify-center w-full max-w-5xl mx-auto flex-1 min-h-0">
+    <div className="relative flex flex-col items-center justify-center room-canvas w-full max-w-5xl mx-auto md:flex-1 min-h-0">
       {/* Wooden Screen Frame */}
       <div className="relative p-1.5 sm:p-2 bg-[#4a2810] rounded-xl shadow-2xl border-4 border-[#783e1c] w-full max-h-[calc(100vh-170px)] flex flex-col items-center justify-center">
         <div className="absolute top-1.5 left-1.5 w-3 h-3 rounded-full bg-[#facc15] border border-[#78350f] z-10" />
@@ -1806,8 +1838,17 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
           className="w-full h-auto max-h-[calc(100vh-215px)] aspect-[960/600] pixelated cursor-pointer rounded-md bg-[#eed9bf] block shadow-inner object-contain"
         />
 
+        {isNapping && (
+          <div className="w-full flex flex-wrap items-center justify-between gap-2 px-2 pt-1 font-pixel text-xs text-[#fef08a]">
+            <span role="status" aria-live="off">Cozy nap: {napCountdown}s remaining</span>
+            <button onClick={onWakeEarly} className="min-h-11 px-3 rounded border border-[#d59f63] bg-[#783e1c] text-[#fff9f0]">
+              Wake up early
+            </button>
+          </div>
+        )}
+
         {/* Dynamic Nearby Proximity Quick Bar */}
-        <div className="flex flex-wrap items-center justify-between w-full px-2 pt-1 text-[11px] font-pixel text-[#fde047] gap-2">
+        {!isNapping && <div className="flex flex-wrap items-center justify-between w-full px-2 pt-1 text-[11px] font-pixel text-[#fde047] gap-2">
           {activeZoneObj ? (
             <button
               onClick={() => {
@@ -1819,10 +1860,10 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
                   onInteract(activeZone);
                 }
               }}
-              className="px-3 py-0.5 rounded bg-[#fde047] text-[#451a03] font-bold border border-[#78350f] shadow-xs animate-bounce flex items-center gap-1.5 cursor-pointer text-xs"
+              className="px-3 py-0.5 rounded bg-[#fde047] text-[#451a03] font-bold border border-[#78350f] shadow-xs min-h-11 md:min-h-8 flex items-center gap-1.5 cursor-pointer text-xs"
             >
-              <span>✨ CLICK ON ME! [Explore {activeZoneObj.label}]</span>
-              <span className="text-[10px] text-[#78350f]">(or Press [E])</span>
+              <span>Explore {activeZoneObj.label}</span>
+              <span className="hidden md:inline text-xs text-[#78350f]">(or press E)</span>
             </button>
           ) : (
             <span className="flex items-center gap-1.5 text-[10px]">
@@ -1840,36 +1881,36 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
           <span className="text-[#f5d0fe] text-[10px] hidden sm:inline">
             WASD / Arrow Keys or Click Floor to Move
           </span>
-        </div>
+        </div>}
       </div>
 
       {/* Mobile D-Pad */}
       <div className="flex items-center justify-between w-full max-w-xl mt-3 px-2 md:hidden">
-        <div className="relative w-28 h-28 bg-[#5a3014] rounded-full p-2 border-2 border-[#8c5028] shadow-md flex items-center justify-center">
+        <div className="relative w-36 h-36 bg-[#5a3014] rounded-full p-2 border-2 border-[#8c5028] shadow-md flex items-center justify-center">
           <button
             onClick={() => handleDPadPress('up')}
-            className="absolute top-1 left-1/2 -translate-x-1/2 w-8 h-8 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
+            className="absolute top-1 left-1/2 -translate-x-1/2 w-11 h-11 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
             aria-label="Move Up"
           >
             ▲
           </button>
           <button
             onClick={() => handleDPadPress('left')}
-            className="absolute left-1 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
+            className="absolute left-1 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
             aria-label="Move Left"
           >
             ◀
           </button>
           <button
             onClick={() => handleDPadPress('right')}
-            className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
+            className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
             aria-label="Move Right"
           >
             ▶
           </button>
           <button
             onClick={() => handleDPadPress('down')}
-            className="absolute bottom-1 left-1/2 -translate-x-1/2 w-8 h-8 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
+            className="absolute bottom-1 left-1/2 -translate-x-1/2 w-11 h-11 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
             aria-label="Move Down"
           >
             ▼
@@ -1888,13 +1929,13 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
             }
           }}
           disabled={!activeZone}
-          className={`px-6 py-4 rounded-xl font-pixel text-sm uppercase tracking-wider border-2 cursor-pointer ${
+          className={`px-3 py-4 rounded-xl font-pixel text-sm uppercase tracking-wider border-2 cursor-pointer ${
             activeZone
               ? 'bg-[#d59f63] text-[#381a07] border-[#fff9f0] shadow-lg animate-bounce'
               : 'bg-[#5a3014] text-[#a88265] border-[#381a07] opacity-60'
           }`}
         >
-          {activeZone ? `[A] Explore` : 'Walk Near'}
+          {activeZone ? 'Tap to explore' : 'Walk Near'}
         </button>
       </div>
     </div>

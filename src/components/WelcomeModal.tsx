@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useId } from 'react';
+import { useDialog } from '../utils/useDialog';
 import { soundEngine } from '../utils/soundEngine';
 import { Sparkles, ArrowRight } from 'lucide-react';
 
@@ -21,10 +22,14 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
     onStart();
   };
 
+  const dialogRef = useDialog(onClose ?? onStart);
+  const titleId = useId();
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-md bg-[#fcf8f2] rounded-2xl border-4 border-[#783e1c] shadow-2xl p-6 text-[#4a3b32] space-y-4 text-center"
+        ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}
+        className="relative max-h-[90dvh] overflow-y-auto overscroll-contain w-full max-w-md bg-[#fcf8f2] rounded-2xl border-4 border-[#783e1c] shadow-2xl p-4 sm:p-6 text-[#4a3b32] space-y-4 text-center"
         style={{
           boxShadow: 'inset 0 0 0 2px #d59f63, inset 0 0 0 4px #4a2810, 0 16px 40px rgba(0,0,0,0.6)'
         }}
@@ -39,7 +44,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
         {onClose && (
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 text-[#783e1c] hover:text-[#451a03] font-pixel text-xs p-1 rounded cursor-pointer"
+            className="absolute top-1 right-1 w-11 h-11 text-[#783e1c] hover:text-[#451a03] font-pixel text-xs p-1 rounded cursor-pointer"
             aria-label="Close instructions"
           >
             ✕
@@ -47,22 +52,21 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
         )}
 
         {/* Clean Header & Exact User Copy (No picture) */}
-        <div className="space-y-3 pt-2">
+        <div className="space-y-3 pt-8">
           <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-[#fde047] text-[#78350f] font-pixel text-xs font-bold border border-[#b45309] shadow-xs">
             <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            MY LITTLE WORLD · CAL '26 🐻
+            MY LITTLE WORLD · CAL MDes '27 🐻
           </div>
 
-          <h1 className="font-pixel text-base sm:text-lg font-bold text-[#451a03] leading-snug">
+          <h1 id={titleId} className="font-pixel text-base sm:text-lg font-bold text-[#451a03] leading-snug">
             Welcome to Rachel Li's bedroom!
           </h1>
 
-          <p className="text-xs sm:text-sm text-[#78350f] leading-relaxed max-w-sm mx-auto font-sans">
-            Please use the arrow buttons to move the avatar around and explore the areas of the room!
+          <p className="md:hidden text-sm text-[#78350f] leading-relaxed font-sans">
+            Tap a room object or a destination below to explore. Tap the floor or use the arrow buttons to move Rachel.
           </p>
-
-          <p className="text-[11px] text-[#9a3412] font-pixel">
-            (WASD / Arrow Keys / Click floor to move · [E] to interact)
+          <p className="hidden md:block text-sm text-[#78350f] leading-relaxed font-sans">
+            Click a room object or a destination below to explore. Use WASD / Arrow Keys or click the floor to move; press E to interact nearby.
           </p>
         </div>
 

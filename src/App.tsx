@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ZoneId, TimeOfDay } from './types/game';
+import { SoobinChat } from './components/SoobinChat';
 import { PixelRoomCanvas } from './components/PixelRoomCanvas';
 import { DeskModal } from './components/modals/DeskModal';
 import { BookshelfModal } from './components/modals/BookshelfModal';
@@ -31,6 +32,14 @@ import {
 } from 'lucide-react';
 
 export default function App() {
+  const [chatOpen, setChatOpen] = useState(() => window.matchMedia('(min-width: 1100px)').matches);
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1100px)');
+    const update = () => setChatOpen(media.matches);
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+  const [showSettings, setShowSettings] = useState(false);
   const [showWelcome, setShowWelcome] = useState<boolean>(true);
   const [activeModal, setActiveModal] = useState<ZoneId | null>(null);
   const [showCelebration, setShowCelebration] = useState<boolean>(false);
@@ -136,7 +145,12 @@ export default function App() {
   }, [exploredZones, hasShownCompletionModal]);
 
   const handleOpenZone = (zone: ZoneId | null) => {
-    setActiveModal(zone);
+    if (zone === 'cat') {
+      setChatOpen(true);
+      setActiveModal(null);
+    } else {
+      setActiveModal(zone);
+    }
     if (zone && CORE_5_ZONES.includes(zone)) {
       setExploredZones(prev => new Set(prev).add(zone));
     }
@@ -180,71 +194,36 @@ export default function App() {
 
   // THE 5 EXACT EXPLORATION DOCK ITEMS
   const quickNavItems: Array<{ id: ZoneId; label: string; num: number; icon: React.ReactNode }> = [
-    { id: 'bed', label: '1. The Bed', num: 1, icon: <Bed className="w-3.5 h-3.5 text-purple-300" /> },
-    { id: 'door', label: '2. The Door', num: 2, icon: <DoorClosed className="w-3.5 h-3.5 text-amber-300" /> },
-    { id: 'cat', label: '3. Soobin the Cat', num: 3, icon: <Heart className="w-3.5 h-3.5 text-pink-300" /> },
-    { id: 'bookshelf', label: '4. POPMART Shelf', num: 4, icon: <Sparkles className="w-3.5 h-3.5 text-yellow-300" /> },
-    { id: 'desk', label: '5. My Desk', num: 5, icon: <Laptop className="w-3.5 h-3.5 text-cyan-300" /> },
+    { id: 'bed', label: '1. Cozy Bed', num: 1, icon: <Bed className="w-3.5 h-3.5 text-purple-300" /> },
+    { id: 'door', label: '2. Boba Break', num: 2, icon: <DoorClosed className="w-3.5 h-3.5 text-amber-300" /> },
+    { id: 'cat', label: '3. Meet Soobin', num: 3, icon: <Heart className="w-3.5 h-3.5 text-pink-300" /> },
+    { id: 'bookshelf', label: '4. Figurines', num: 4, icon: <Sparkles className="w-3.5 h-3.5 text-yellow-300" /> },
+    { id: 'desk', label: '5. About & Work', num: 5, icon: <Laptop className="w-3.5 h-3.5 text-cyan-300" /> },
   ];
 
   const exploredCount = CORE_5_ZONES.filter(z => exploredZones.has(z)).length;
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#241c30] text-[#fbf7ee]">
+    <div className="room-app min-h-dvh w-full flex flex-col md:h-dvh md:overflow-hidden bg-[#241c30] text-[#fbf7ee]">
       {/* 
-        HEADER: Fixed height h-11, shrink-0
+        HEADER: responsive title and settings
       */}
-      <header className="h-11 shrink-0 flex items-center justify-between gap-4 px-3 sm:px-6 bg-[#1a1424] border-b border-[#473859] z-40">
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="font-pixel text-xs sm:text-sm font-bold text-[#fef08a] whitespace-nowrap tracking-wider drop-shadow-xs">
+      <header className="room-header shrink-0 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-6 bg-[#1a1424] border-b border-[#473859] z-40">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="font-pixel text-[10px] sm:text-sm font-bold text-[#fef08a] tracking-wider drop-shadow-xs">
             WELCOME TO MY LITTLE WORLD
           </span>
           <span className="hidden sm:inline-block text-[11px] font-pixel text-[#d8b4fe]">
-            · Rachel Li · Cal '26 🐻
+            · Rachel Li · Cal MDes '27 🐻
           </span>
         </div>
 
-        {/* 5 Area Direct Links */}
-        <nav className="hidden lg:flex items-center gap-4 text-xs font-pixel text-[#d8b4fe]">
-          <button
-            onClick={() => handleOpenZone('bed')}
-            className="hover:text-[#fde047] transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1"
-          >
-            <span>1. Bed</span>
-            {exploredZones.has('bed') && <span className="text-emerald-400 text-[10px]">✓</span>}
-          </button>
-          <button
-            onClick={() => handleOpenZone('door')}
-            className="hover:text-[#fde047] transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1"
-          >
-            <span>2. Door</span>
-            {exploredZones.has('door') && <span className="text-emerald-400 text-[10px]">✓</span>}
-          </button>
-          <button
-            onClick={() => handleOpenZone('cat')}
-            className="hover:text-[#fde047] transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1"
-          >
-            <span>3. Soobin</span>
-            {exploredZones.has('cat') && <span className="text-emerald-400 text-[10px]">✓</span>}
-          </button>
-          <button
-            onClick={() => handleOpenZone('bookshelf')}
-            className="hover:text-[#fde047] transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1"
-          >
-            <span>4. Shelf</span>
-            {exploredZones.has('bookshelf') && <span className="text-emerald-400 text-[10px]">✓</span>}
-          </button>
-          <button
-            onClick={() => handleOpenZone('desk')}
-            className="hover:text-[#fde047] transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1"
-          >
-            <span>5. Desk</span>
-            {exploredZones.has('desk') && <span className="text-emerald-400 text-[10px]">✓</span>}
-          </button>
-        </nav>
+        <button className="md:hidden min-h-11 px-2 rounded border border-[#6b538c] text-xs font-pixel text-[#fef08a]" aria-expanded={showSettings} aria-controls="room-settings" onClick={() => setShowSettings(value => !value)}>
+          {showSettings ? 'Close' : 'Menu'}
+        </button>
 
         {/* Header Actions: Instructions, Reset, Star Jar, Audio */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div id="room-settings" className={`${showSettings ? 'flex' : 'hidden'} room-settings md:flex flex-wrap items-center gap-2 w-full md:w-auto pb-2 md:pb-0`}>
           <button
             onClick={() => {
               soundEngine.playInspect();
@@ -254,7 +233,7 @@ export default function App() {
             title="Open introduction & instructions slide"
           >
             <HelpCircle className="w-3.5 h-3.5 text-yellow-300" />
-            <span className="hidden md:inline">Instructions</span>
+            <span className="inline">Instructions</span>
           </button>
 
           <button
@@ -266,7 +245,7 @@ export default function App() {
             title="Reset tour and return to intro slide"
           >
             <RotateCcw className="w-3.5 h-3.5 text-pink-300" />
-            <span className="hidden md:inline">Reset</span>
+            <span className="inline">Reset</span>
           </button>
 
           <button
@@ -278,7 +257,7 @@ export default function App() {
             title="Open bedside paper star jar"
           >
             <Star className="w-3.5 h-3.5 fill-current text-yellow-300" />
-            <span className="hidden sm:inline">Star Jar</span>
+            <span className="inline">Star Jar</span>
           </button>
 
           <button
@@ -291,7 +270,7 @@ export default function App() {
             title="Turn Lo-Fi Music ON or OFF"
           >
             <Disc3 className={`w-3.5 h-3.5 ${isMusicPlaying ? 'animate-spin text-[#451a03]' : 'text-purple-300'}`} />
-            <span className="hidden sm:inline">
+            <span className="inline">
               {isMusicPlaying ? 'Lo-Fi: ON 🎵' : 'Lo-Fi: OFF 🔇'}
             </span>
           </button>
@@ -310,14 +289,14 @@ export default function App() {
         </div>
       </header>
 
-      {/* SUBHEADER / HUD BAR: Fixed height h-8, shrink-0 */}
-      <div className="h-8 shrink-0 bg-[#1e172a] border-b border-[#3b2d4f] px-3 sm:px-6 flex items-center justify-between text-xs">
+      {/* SUBHEADER / HUD BAR */}
+      <div className="room-hud shrink-0 min-h-12 flex-wrap gap-2 py-1 bg-[#1e172a] border-b border-[#3b2d4f] px-3 sm:px-6 flex items-center justify-between text-xs">
         {/* 5 Areas Progress Counter */}
         <div className="flex items-center gap-2">
-          <span className="font-pixel text-[11px] text-[#fde047]">
+          <span className="font-pixel text-xs whitespace-nowrap text-[#fde047]">
             Explored: {exploredCount} / 5
           </span>
-          <div className="w-24 sm:w-32 bg-[#3b2d4f] h-2 rounded-full overflow-hidden border border-[#5d477b]">
+          <div className="hidden sm:block w-24 sm:w-32 bg-[#3b2d4f] h-2 rounded-full overflow-hidden border border-[#5d477b]">
             <div
               className="bg-gradient-to-r from-[#d8b4fe] to-[#fde047] h-full rounded-full transition-all duration-300"
               style={{ width: `${(exploredCount / 5) * 100}%` }}
@@ -329,7 +308,7 @@ export default function App() {
               All 5 Explored! ⭐
             </span>
           ) : (
-            <span className="text-[10px] font-pixel text-[#d8b4fe]">
+            <span className="hidden sm:inline text-[10px] font-pixel text-[#d8b4fe]">
               ({5 - exploredCount} remaining)
             </span>
           )}
@@ -385,8 +364,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* MAIN SCREEN: flex-1, overflow-hidden, fits perfectly without scrolling */}
-      <main className="flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-between p-1 sm:p-2 w-full max-w-5xl mx-auto">
+      {/* MAIN SCREEN: scroll naturally on phones; fit the desktop viewport */}
+      <main className="room-main md:flex-1 min-h-0 flex flex-col items-center justify-between p-1 sm:p-2 w-full max-w-5xl mx-auto">
+        <div className="room-scene">
         {/* 2D Pixel Canvas */}
         <PixelRoomCanvas
           onInteract={handleOpenZone}
@@ -402,9 +382,18 @@ export default function App() {
           onWakeEarly={handleWakeEarly}
         />
 
+        <SoobinChat
+          open={chatOpen}
+          onOpen={() => setChatOpen(true)}
+          onClose={() => setChatOpen(false)}
+          onPetAndFeed={() => setActiveModal('cat')}
+          obscured={showWelcome || showCelebration || activeModal !== null}
+        />
+        </div>
+
         {/* 5-Item Exploration Dock */}
-        <div className="w-full max-w-4xl shrink-0 mt-1">
-          <div className="grid grid-cols-5 gap-1.5 p-1.5 bg-[#1a1424] rounded-lg border border-[#473859]">
+        <nav aria-label="Explore the room" className="w-full max-w-4xl shrink-0 mt-3 md:mt-1">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 p-1.5 bg-[#1a1424] rounded-lg border border-[#473859]">
             {quickNavItems.map(item => {
               const isExplored = exploredZones.has(item.id);
               return (
@@ -414,15 +403,15 @@ export default function App() {
                     soundEngine.playInspect();
                     handleOpenZone(item.id);
                   }}
-                  className={`flex items-center justify-between p-1.5 sm:p-2 rounded font-pixel text-[11px] transition-all cursor-pointer border ${
+                  className={`last:col-span-2 sm:last:col-span-1 flex items-center justify-between min-h-12 p-2 rounded font-pixel text-xs transition-all cursor-pointer border ${
                     isExplored
                       ? 'bg-[#2f2042] text-[#fef08a] border-[#6b538c]'
                       : 'bg-[#221830] text-[#c4b5fd] border-[#3b2d4f] hover:bg-[#312347]'
                   }`}
                 >
-                  <div className="flex items-center gap-1 truncate">
+                  <div className="flex items-center gap-1.5 min-w-0">
                     {item.icon}
-                    <span className="truncate">{item.label}</span>
+                    <span className="text-left leading-relaxed">{item.label}</span>
                   </div>
                   {isExplored ? (
                     <span className="text-emerald-400 text-[10px] font-bold shrink-0">✓</span>
@@ -433,17 +422,17 @@ export default function App() {
               );
             })}
           </div>
-        </div>
+        </nav>
       </main>
 
-      {/* FOOTER: Fixed height h-6, shrink-0 */}
-      <footer className="h-6 shrink-0 flex items-center justify-between px-4 text-[10px] font-pixel text-[#a78bfa]/80 bg-[#161020] border-t border-[#3b2d4f]">
-        <span>Designed & coded with warmth by Rachel Li · UC Berkeley '26 🐻</span>
+      {/* FOOTER */}
+      <footer className="room-footer min-h-11 shrink-0 flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-[10px] font-pixel text-[#a78bfa]/80 bg-[#161020] border-t border-[#3b2d4f]">
+        <span className="hidden md:inline">Designed & coded with warmth by Rachel Li · Cal MDes '27 🐻</span>
         <button
           onClick={() => setActiveModal('starjar')}
-          className="text-[#fde047] hover:underline cursor-pointer flex items-center gap-1"
+          className="min-h-11 text-left text-[#fde047] hover:underline cursor-pointer flex items-center gap-1"
         >
-          ⭐ Bedside Glass Star Jar ({Array.from(exploredZones).filter(z => CORE_5_ZONES.includes(z)).length}/5 Explored)
+          ⭐ Star Jar ({Array.from(exploredZones).filter(z => CORE_5_ZONES.includes(z)).length}/5 Explored)
         </button>
       </footer>
 

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useId } from 'react';
+import { useDialog } from '../utils/useDialog';
 import { soundEngine } from '../utils/soundEngine';
 
 interface ModalWrapperProps {
@@ -21,13 +22,17 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
     onClose();
   };
 
+  const dialogRef = useDialog(handleClose);
+  const titleId = useId();
+
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-black/65 backdrop-blur-xs animate-in fade-in duration-200"
       onClick={handleClose}
     >
       <div
-        className={`relative w-full ${maxWidth} max-h-[90vh] flex flex-col bg-[#fcf8f2] rounded-xl border-4 border-[#783e1c] shadow-2xl overflow-hidden`}
+        ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}
+        className={`relative w-full ${maxWidth} max-h-[90dvh] flex flex-col bg-[#fcf8f2] rounded-xl border-4 border-[#783e1c] shadow-2xl overflow-hidden`}
         style={{
           boxShadow: 'inset 0 0 0 2px #d59f63, inset 0 0 0 4px #4a2810, 0 10px 30px rgba(0,0,0,0.5)'
         }}
@@ -40,9 +45,9 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
         <div className="absolute bottom-1.5 right-1.5 w-3 h-3 rounded-full bg-[#facc15] border border-[#78350f] z-10" />
 
         {/* Stardew-Style Header Banner */}
-        <div className="flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-[#8c5028] via-[#a36336] to-[#8c5028] border-b-4 border-[#5a3014] text-[#fff9f0]">
-          <div>
-            <h2 className="font-pixel text-sm md:text-base font-bold tracking-wide drop-shadow-md">
+        <div className="flex items-center justify-between shrink-0 gap-3 px-4 py-3 bg-gradient-to-r from-[#8c5028] via-[#a36336] to-[#8c5028] border-b-4 border-[#5a3014] text-[#fff9f0]">
+          <div className="min-w-0">
+            <h2 id={titleId} className="font-pixel text-sm md:text-base font-bold tracking-wide drop-shadow-md">
               {title}
             </h2>
             {subtitle && (
@@ -54,7 +59,7 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
           <button
             onClick={handleClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#5a3014] hover:bg-[#783e1c] text-[#fef08a] border-2 border-[#d59f63] font-pixel text-xs transition-transform active:scale-95 cursor-pointer shadow-md"
+            className="w-11 h-11 shrink-0 flex items-center justify-center rounded-lg bg-[#5a3014] hover:bg-[#783e1c] text-[#fef08a] border-2 border-[#d59f63] font-pixel text-xs transition-transform active:scale-95 cursor-pointer shadow-md"
             aria-label="Close dialog"
           >
             ✕
@@ -62,7 +67,7 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = ({
         </div>
 
         {/* Modal Content Scroll Area */}
-        <div className="p-4 md:p-6 overflow-y-auto space-y-5 text-[#4a3b32]">
+        <div className="min-h-0 p-4 md:p-6 overflow-y-auto overscroll-contain space-y-5 text-[#4a3b32]">
           {children}
         </div>
       </div>
