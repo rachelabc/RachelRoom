@@ -1,0 +1,6 @@
+{
+  "name": "Welcome to My Little World",
+  "description": "Welcome to My Little World by Rachel Li ~ A cozy, interactive 2D pixel-art indie game and personal portfolio. Explore Rachel's bedroom, meet Soobin the tuxedo cat, discover POPMART figurines, and fold paper star wishes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
