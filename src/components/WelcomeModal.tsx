@@ -1,5 +1,4 @@
 import React from 'react';
-import { PORTRAIT_IMAGE } from '../data/portfolioData';
 import { soundEngine } from '../utils/soundEngine';
 import { Sparkles, ArrowRight } from 'lucide-react';
 
@@ -47,24 +46,21 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
           </button>
         )}
 
-        {/* Character Portrait */}
-        <div className="flex justify-center">
-          <img
-            src={PORTRAIT_IMAGE}
-            alt="Rachel Li"
-            referrerPolicy="no-referrer"
-            className="w-20 h-20 rounded-xl border-3 border-[#783e1c] object-cover pixelated shadow-md"
-          />
-        </div>
+        {/* Clean Header & Exact User Copy (No picture) */}
+        <div className="space-y-3 pt-2">
+          <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-[#fde047] text-[#78350f] font-pixel text-xs font-bold border border-[#b45309] shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            MY LITTLE WORLD · CAL '26 🐻
+          </div>
 
-        {/* Exact concise wording requested by user */}
-        <div className="space-y-2">
-          <h1 className="font-pixel text-base sm:text-lg font-bold text-[#451a03]">
+          <h1 className="font-pixel text-base sm:text-lg font-bold text-[#451a03] leading-snug">
             Welcome to Rachel Li's bedroom!
           </h1>
+
           <p className="text-xs sm:text-sm text-[#78350f] leading-relaxed max-w-sm mx-auto font-sans">
             Please use the arrow buttons to move the avatar around and explore the areas of the room!
           </p>
+
           <p className="text-[11px] text-[#9a3412] font-pixel">
             (WASD / Arrow Keys / Click floor to move · [E] to interact)
           </p>

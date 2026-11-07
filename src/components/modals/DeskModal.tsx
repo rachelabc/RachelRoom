@@ -19,12 +19,10 @@ export const DeskModal: React.FC<DeskModalProps> = ({ onClose }) => {
       <div className="space-y-4 text-[#4a3b32]">
         {/* 1. Character Intro Card (Who I Am) */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 bg-[#f8f1e5] rounded-xl border-2 border-[#d59f63] shadow-xs">
-          <img
-            src={PORTRAIT_IMAGE}
-            alt="Rachel Li in Berkeley sweater"
-            referrerPolicy="no-referrer"
-            className="w-20 h-20 sm:w-22 sm:h-22 rounded-xl border-2 border-[#783e1c] shadow-md object-cover pixelated shrink-0"
-          />
+          <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl bg-[#003262] text-[#fdb515] border-2 border-[#783e1c] shadow-md flex flex-col items-center justify-center shrink-0 font-pixel font-bold">
+            <span className="text-[10px]">CAL</span>
+            <span className="text-xl">🐻</span>
+          </div>
           <div className="space-y-1.5 text-center sm:text-left">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
               <span className="font-pixel text-xs text-[#783e1c] bg-[#e9d5ff] px-2 py-0.5 rounded-full border border-[#c084fc] font-bold">

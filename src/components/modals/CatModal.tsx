@@ -42,27 +42,29 @@ export const CatModal: React.FC<CatModalProps> = ({
       maxWidth="max-w-xl"
     >
       <div className="space-y-3.5 text-[#4a3b32]">
-        {/* Cat Banner with Picture */}
-        <div className="relative rounded-xl overflow-hidden border-2 border-[#783e1c] shadow-md bg-[#251b33]">
-          <img
-            src={TUXEDO_CAT_IMAGE}
-            alt="Soobin the Tuxedo Cat"
-            referrerPolicy="no-referrer"
-            className="w-full h-40 sm:h-44 object-cover pixelated"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-end p-3.5 text-white">
-            <div className="flex items-center gap-2">
-              <span className="font-pixel text-[10px] text-pink-300 bg-pink-900/60 px-2 py-0.5 rounded border border-pink-400/40 flex items-center gap-1">
-                <Crown className="w-3 h-3 text-yellow-300" />
-                Independent Queen
-              </span>
-              <span className="text-[10px] bg-purple-900/80 text-purple-200 px-2 py-0.5 rounded border border-purple-400/40">
-                Purr Level: {purrCount}
-              </span>
+        {/* Cat Banner */}
+        <div className="relative rounded-xl overflow-hidden border-2 border-[#783e1c] shadow-md bg-gradient-to-r from-[#20152e] via-[#352147] to-[#20152e] p-4 text-white">
+          <div className="flex items-center gap-3.5">
+            <div className="w-16 h-16 rounded-xl bg-[#130b1c] border-2 border-[#d59f63] shadow-inner flex flex-col items-center justify-center text-3xl shrink-0">
+              🐱
             </div>
-            <h3 className="font-pixel text-sm sm:text-base font-bold text-white drop-shadow mt-0.5">
-              Soobin (6 Years Old)
-            </h3>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="font-pixel text-[10px] text-pink-300 bg-pink-900/60 px-2 py-0.5 rounded border border-pink-400/40 flex items-center gap-1">
+                  <Crown className="w-3 h-3 text-yellow-300" />
+                  Independent Queen
+                </span>
+                <span className="text-[10px] bg-purple-900/80 text-purple-200 px-2 py-0.5 rounded border border-purple-400/40">
+                  Purr Level: {purrCount}
+                </span>
+              </div>
+              <h3 className="font-pixel text-sm sm:text-base font-bold text-[#fef08a] drop-shadow">
+                Soobin (6 Years Old)
+              </h3>
+              <p className="text-xs text-purple-200 font-sans">
+                Snacking enthusiast & independent ruler of the bedroom
+              </p>
+            </div>
           </div>
         </div>
 
