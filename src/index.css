@@ -196,7 +196,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 3px s
   .room-proximity > span { font-size: 11px; }
   .room-movement { flex-shrink: 0; height: 48px; margin-top: 2px; justify-content: center; padding: 0; }
   .room-dpad { display: flex; gap: 4px; width: auto; height: 44px; padding: 0; border: 0; background: transparent; box-shadow: none; }
-  .room-dpad button { position: static; transform: none; translate: none; width: 48px; height: 44px; }
+  .room-dpad button { width: 48px; height: 44px; }
   .room-dpad > div { display: none; }
   .room-explore { display: none; }
   .room-main > nav { margin-top: 0; }

@@ -1951,36 +1951,35 @@ export const PixelRoomCanvas: React.FC<PixelRoomCanvasProps> = ({
 
       {/* Mobile D-Pad */}
       <div className="room-movement flex items-center justify-between w-full max-w-xl mt-3 px-2 md:hidden">
-        <div className="room-dpad relative w-36 h-36 bg-[#5a3014] rounded-full p-2 border-2 border-[#8c5028] shadow-md flex items-center justify-center">
+        <div className="room-dpad flex items-center justify-center gap-1">
           <button
             onClick={() => handleDPadPress('up')}
-            className="absolute top-1 left-1/2 -translate-x-1/2 w-11 h-11 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
+            className="w-12 h-11 shrink-0 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
             aria-label="Move Up"
           >
             ▲
           </button>
           <button
             onClick={() => handleDPadPress('left')}
-            className="absolute left-1 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
+            className="w-12 h-11 shrink-0 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
             aria-label="Move Left"
           >
             ◀
           </button>
           <button
             onClick={() => handleDPadPress('right')}
-            className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
+            className="w-12 h-11 shrink-0 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
             aria-label="Move Right"
           >
             ▶
           </button>
           <button
             onClick={() => handleDPadPress('down')}
-            className="absolute bottom-1 left-1/2 -translate-x-1/2 w-11 h-11 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
+            className="w-12 h-11 shrink-0 bg-[#8c5028] active:bg-[#d59f63] text-white rounded text-xs font-bold"
             aria-label="Move Down"
           >
             ▼
           </button>
-          <div className="w-5 h-5 rounded-full bg-[#381a07]" />
         </div>
 
         <button
